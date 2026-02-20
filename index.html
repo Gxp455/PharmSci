@@ -149,34 +149,31 @@
     }
 
     async function finalSubmit() {
-        if (confirm(`ยืนยันการบันทึกออนไลน์สำหรับกลุ่มที่ ${currentGroupId}?`)) {
-            document.getElementById('loading').style.display = 'block';
-            try {
-                await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({ group: currentGroupId, choice1: temp1, choice2: temp2 })
-                });
-                await loadOnlineData();
-                document.getElementById('selection-area').style.display = 'none';
-                document.getElementById('result-msg').style.display = 'block';
-            } catch (e) {
-                alert("เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาลองใหม่");
-            } finally {
-                document.getElementById('loading').style.display = 'none';
-            }
+    if (confirm(`ยืนยันการบันทึกออนไลน์สำหรับกลุ่มที่ ${currentGroupId}?`)) {
+        document.getElementById('loading').style.display = 'block';
+        try {
+            // ปรับปรุงรูปแบบการส่งให้ทะลุระบบความปลอดภัย Google
+            await fetch(SCRIPT_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'text/plain;charset=utf-8',
+                },
+                body: JSON.stringify({ 
+                    group: currentGroupId, 
+                    choice1: temp1, 
+                    choice2: temp2 
+                })
+            });
+
+            // เมื่อบันทึกเสร็จ ให้ดึงข้อมูลมาแสดงใหม่
+            await loadOnlineData();
+            document.getElementById('selection-area').style.display = 'none';
+            document.getElementById('result-msg').style.display = 'block';
+
+        } catch (e) {
+            alert("เกิดข้อผิดพลาดในการส่งข้อมูล: " + e.message);
+        } finally {
+            document.getElementById('loading').style.display = 'none';
         }
     }
-
-    function resetForm() {
-        document.getElementById('auth-area').style.display = 'block';
-        document.getElementById('result-msg').style.display = 'none';
-        document.getElementById('groupNumber').value = "";
-    }
-</script>
-</body>
-</html>
-    <script  src="./script.js"></script>
-
-  </body>
-  
-</html>
+}
